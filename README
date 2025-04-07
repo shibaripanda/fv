@@ -1,0 +1,5 @@
+запуск: npm run fv
+
+тест: http://localhost:5173
+
+для последующей очистки базы в docker compose PRELOAD: yes

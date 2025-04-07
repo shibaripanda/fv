@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "app": "concurrently \"(npm run dev --prefix client)\" \"(npm run start:dev --prefix server)\"",
+    "npmi": "npm i && cd server && npm i && cd .. && cd client && npm i && cd ..",
+    "gitpush": "git add . && git commit -m 'home' && git push origin main",
+    "gitpull": "git pull origin main",
+    "fv": "sudo docker compose up --build"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

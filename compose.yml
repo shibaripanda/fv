@@ -1,0 +1,68 @@
+services:
+  client:
+    image: pandadoker/clientfv:060425
+    build:
+      context: ./client
+    container_name: client_fv
+    ports:
+      - "5173:80"
+
+  server:
+    image: pandadoker/serverfv:060425
+    build:
+      context: ./server
+    container_name: server_fv
+    depends_on:
+        db:
+          condition: service_healthy
+        redis:
+          condition: service_healthy
+    ports:
+      - "5050:5050"
+    # env_file:
+    #   - ./server/.env.docker
+    environment:
+        REDIS_HOST: redis
+        REDIS_PORT: 6379
+        DB: db
+        LOG_A: ./logs/reminder.log
+        LOG_B: ../logs/reminder.log
+        PRELOAD: no # yes для очисти базы
+        TZ: Europe/Minsk
+    volumes:
+      - ./data_fv/logs:/app/logs
+
+  db:
+    image: mysql
+    container_name: mysql_fv
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysql", "-u", "root", "-proot", "-e", "SELECT 1"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fv_db 
+    volumes:
+      - ./data_fv/mysqldata:/var/lib/mysql
+
+  redis:
+    image: redis
+    container_name: redis_fv
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data_fv/redisdata:/data     
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+
+
+
+
